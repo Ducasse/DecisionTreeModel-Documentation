@@ -40,7 +40,24 @@ Now that we have seen decision trees we will procede to show how we can learn th
 | 13 | cloudy  | high        | normal   | weak   | yes         |
 | 14 | rainy   | medium      | high     | strong | no          |
 
+We will see different ways we can build a decision trees for this data.
 
+### ID3 Algorithm
 
+One algorithm that can be used to learn a decision tree from data is called ID3. This algorithm is simple to understand and implement, but one of its downfalls is that it only works for categorical data. We will later see the algorithm C4.5, which extends ID3 to be able to handle numerical data as well as missing data. For now, we will see how ID3 can be used to build a decision tree from the given table.
 
+ID3 can be briefely summerized in the follwing instructions
 
+```
+ID3(Training set S, Attributes)
+1) If all examples in S have the same label, return leaf node with that label
+2) If Attributes is empty, return leaf node with most common label
+3) Else
+4)    Let v <- Atribute that returns best InformationGain
+5)    For all posible values, v_j, of v:
+6)      Let Examples(v_j) be the instances of S where v=v_j
+7)      If Examples(v_j) is empty
+8)        Return leaf node with most common label in the examples
+9)      Else
+10)       Return ID3( Examples(v_j), Attributes / {v})
+```
