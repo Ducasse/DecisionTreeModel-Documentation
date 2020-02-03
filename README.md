@@ -74,5 +74,14 @@ We can see in step 12 that this algorithm follows a recursive strategy, after ea
 
 To compare how good is each attribute to split the data we have to define a metric that tells us what a "good" separation is. In this case, our mesure of how mixed or "impure" the dataset labels are will be the entropy of the data. The entropy tries to quantify the level of "surprise" of seeing an output, where unlikely events produce a bigger surprise that likely ones. The formal definition of entropy is as follows:
 
-![equation](https://latex.codecogs.com/png.latex?H(T)&space;=&space;\sum_i&space;p_i&space;\log_2(p_i))
+![equation](https://latex.codecogs.com/png.latex?H(T)&space;=-&space;\sum_i&space;p_i&space;\log_2(p_i))
 
+Where $p_i$ is the probability of the event T is equal to i. If we plot the case for when we have a binary choice we get the following graph
+
+`entropy graph`
+
+To exemplify this let's think that we have a machine that can randomly give apples and oranges. If we had a probability of 0 of obtaining oranges then it would not be a surprice that we get only apples and never oranges, so in this case the entropy is 0. If the machine gave oranges 30 percent of the time, then the entropy of the event T would be
+
+$H(T) =- ( 0.3 log_2(0.3) + 0.7 log_2(0.7) ) = 0.521 + 0.360 = 0.881$
+
+Now the entropy is no longer 0, and since the event is of getting oranges is more unlikely that getting apples then we are more surprised when that happends. 
