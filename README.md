@@ -111,3 +111,21 @@ Now we would like how much information we can gain given that we know the outloo
 | 9  | sunny   | low         | normal   | weak   | yes         |
 | 11 | sunny   | medium      | normal   | strong | yes         |
 
+Here if we calculate the entropy and we get that 
+$$H(play\ tennis_{sunny}) = 0.970$$ 
+
+If we repeat this for the $cloudy$ and $rainy$ outlooks we will get that 
+$$H(play\ tennis_{rainy}) = 0.970$$ 
+$$H(play\ tennis_{cloudy}) = 0$$
+
+We can now calculate the entropy of $play\ tenis$ given that we know the $outlook$
+
+$H(play\ tennis | outlook) = 
+\frac{5}{14} H(play\ tennis_{sunny})
++ \frac{5}{14} H(play\ tennis_{rainy})
++ \frac{4}{14} H(play\ tennis_{cloudy}) = 0.724$
+
+And now we can finally calculate the information gain for $play\ tennis$ given that we know the $outlook$
+
+$$IG(play\ tennis, outlook) = H(play\ tennis) - H(play\ tennis | outlook)
+= 0.246$$
