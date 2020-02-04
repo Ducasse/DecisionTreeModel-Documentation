@@ -129,3 +129,29 @@ And now we can finally calculate the information gain for $play\ tennis$ given t
 
 $$IG(play\ tennis, outlook) = H(play\ tennis) - H(play\ tennis | outlook)
 = 0.246$$
+
+#### Splitting and recursion
+
+Now we get to the point of building our decision tree. We will do this in a *greedy* manner, meaning that at each step we will choose the attribute that gives us the best information gain, we will split on this attribute and then we will continue the algorithm with the remaining attributes that have not been chosen. 
+
+In our tennis example we start at first with our complete set of examples and all of our attributes. We then calculate the information gain given each attribute and we obtain that
+
+$$ IG(play\ tennis, outlook) = 0.246 $$
+$$ IG(play\ tennis, temperature) = 0.029 $$
+$$ IG(play\ tennis, humidity) = 0.151 $$
+$$ IG(play\ tennis, wind) = 0.048 $$
+
+This means that best information gain is obtained when we observe the $outlook$. Since we know that the outlook can take the values of $sunny$, $cloudy$ and $rainy$ the first part of the decision tree we are building will look like this
+
+![Tennis Tree](Figures/TennisTree-outlook.png)
+
+Now we have to repeat the process at each child, and at each child the will used the "splitted" dataset, meaning that we will consider the subset of examples given that we know the value of the $outlook$. 
+
+We will start with the case where $outlook=cloudy$. In this case we will call the algorithm again, but only on the subset of examples were the $outlook$ is $cloudy$, and with the attributes that have not yet been used. So the dataset we are working with now looks something like this
+
+|    | ~~outlook~~ | temperature | humidity | wind   | play tennis |
+|----|-------------|-------------|----------|--------|-------------|
+| 3  |   cloudy    | high        | high     | weak   | yes         |
+| 7  |   cloudy    | low         | normal   | strong | yes         |
+| 12 |   cloudy    | medium      | high     | strong | yes         |
+| 13 |   cloudy    | high        | normal   | weak   | yes         |
