@@ -73,11 +73,11 @@ We can see in step 12 that this algorithm follows a recursive strategy, after ea
 
 To compare how good is each attribute to split the data we have to define a metric that tells us what a "good" separation is. In this case, our mesure of how mixed or "impure" the dataset labels are will be the **entropy** of the data.
 
-The entropy is a measure that comes from the field of information theory. The goal is to be able to quantify how much uncertainty is carried by a random event. The formal definition of the entropy of a random event $T$ is as follows:
+The entropy is a measure that comes from the field of information theory. The goal is to be able to quantify how much uncertainty is carried by a random event. The formal definition of the entropy of a random variable $T$ is as follows:
 
 $$H(T)=\mathbb{E}[\log_2(T)]=-\sum_i p_i \log_2(p_i)$$
 
-Where $p_i$ is the probability of the event $T$ is equal to $i$. Lets start with an example and then we will explain why this measure is useful for decision trees. Let's think that we have a machine that can randomly give apples and oranges. If we had a probability of 0 of obtaining oranges then it would not be a surprise that we get only apples and never oranges, so this event carries no uncertainty. In this case the random event has an entropy of 0. On the other hand, if the machine gave oranges 10 percent of the time, then the entropy of the random event $T$ would be
+Where $p_i$ is the probability of the random variable $T$ is equal to $i$. Lets start with an example and then we will explain why this measure is useful for decision trees. Let's think that we have a machine that can randomly give apples and oranges. If we had a probability of 0 of obtaining oranges then it would not be a surprise that we get only apples and never oranges, so this event carries no uncertainty. In this case the random event has an entropy of 0. On the other hand, if the machine gave oranges 10 percent of the time, then the entropy of the random event $T$ would be
 
 $$H(T) =- ( 0.1 \log_2(0.1) + 0.9 \log_2(0.9) ) = -(-0.332 - 0.136) = 0.468$$
 
@@ -89,4 +89,25 @@ which is the case where the output of the machine carries the most uncertainty.
 
 This concept is important for us because it gives us a way to quantify how much uncertainty there is at each node of a decision tree, and how "good" is that node at assigning a label to the data. If our decision tree node is able to make a split where its childs have only data from one label each then we would be able to say that this node is leaving no uncertainty in the data, since we would be able to perfectly predict each point. This will be the goal of the ID3 algorithm, and to get to that point we will introduce the notion of **information gain**. 
 
-Information gain refers to how much the entropy of a random variable is reduced once we observe another random variable. 
+Information gain refers to how much the entropy of a random variable is reduced once we observe another random variable. In our case, we are interested on how the entropy of the target variable is reduced given that we know the value of one of the attributes. The information gain of a random variable $T$ given that we know an attribute $A$ can be expressed by
+
+$$IG(T, A) = H(T) - H(T | A) =  H(T) - \sum_{a\in vals(A)} p_a H(T_a)$$
+
+where $vals(a)$ is the possible values that attribute A can take, $p_a$ is the probability that attribute $A$ takes the value $a$ and $T_a$ correspond to the random variable $T|A=a$, meaning the random variable $T$ given that we know that the attribute $A$ takes the value of $T$. 
+
+Lets see how to calculate the information gain in our tennis example. We would like to see how much information we gain about the playing tennis decision given the outlook. For this we would first like to know the entropy before making any splits in the data. Getting the probability of an event reduces to just seeing the proportion of that event occurring in the dataset. So to calculate the entropy we only have to do
+
+$$H(play\ tennis) 
+= - \left(p_{yes}\log_2\left(p_{yes}\right) + p_{no}\log_2\left(p_{no}\right)\right)
+= - \left(\frac{9}{14}\log_2\left(\frac{9}{14}\right) + \frac{5}{14}\log_2\left(\frac{5}{14}\right)\right) = 0.940$$
+
+Now we would like how much information we can gain given that we know the outlook. We will start by calculating the entropy of the $play\ tennis$ given that we know that the $outlook$ was $sunny$. This means that we are only interested in the following subset of example
+
+|    | outlook | temperature | humidity | wind   | play tennis |
+|----|---------|-------------|----------|--------|-------------|
+| 1  | sunny   | high        | high     | weak   | no          |
+| 2  | sunny   | high        | high     | strong | no          |
+| 8  | sunny   | medium      | high     | weak   | no          |
+| 9  | sunny   | low         | normal   | weak   | yes         |
+| 11 | sunny   | medium      | normal   | strong | yes         |
+
