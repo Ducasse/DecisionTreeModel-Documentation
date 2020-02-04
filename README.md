@@ -2,27 +2,25 @@
 
 Everyday we try to make decisions about actions we will take. These usually can be structures in a series of conditions, for example "I can go to the party only if I don't have homework for tomorrow. If I don't have homework I will only go if my friends are also going". These conditions seem very intuitive and are very easy to follow, and it can be made even more clear if we show it in the following style
 
-`Put party diagram`
+![Party Tree](Figures/PartyTree.png)
 
-This type of diagram is called a "Decision Tree" since we have a root node at the top and if we follow each node's decision we can end up at a feaf node with a decision that was made. Here we will see how these trees can built and how we can learn these tree structures from labeled data.
+This type of diagram is called a **decision tree** since we have a **root node** at the top and if we follow each node's decision we can end up at a **leaf node** with a final decision that was made. Here we will see how these trees can  be built and how we can learn these tree structures from labeled data.
 
 ## Decision Trees
 
-Just like we showed before, decision trees are a way to represent knowledge on a subject and to arrive to conclusions based on the data that is given. This is done by taking a decision at each node, follow that child, take another decision at the child node and so on. We continue until we get to a 'leaf node', which contains the conclusion that was taken. 
+Just like we showed before, decision trees are a way to represent knowledge on a subject and to arrive to conclusions based on the data that is given. This is done by taking a decision at each node, follow that child, take another decision at the child node and so on. We continue until we get to a leaf node, which contains the conclusion that was taken. For example, a decision can be taken by asking if a numerical value is above or below a certain threshold.  
 
-This structure is highly flexible and can be made to work in different type of data, as long as at each node we can make a finite number of decisions then a decision tree can me made. Nonetheless, a very common type of decision tree consists on only making binary choices at each node. This is the case in the party example we saw above. This type of tree can easily adapt to numerical data by using threshold values
 
-`Put binary diagram`
+![Binary Tree](Figures/BinaryTree.png)
 
-Another structure for these trees is to allow each node to have many childs. With this type of tree we can easily model categorical data. Note that it is also posible to adapt `binary diagram` to this type of decision tree model is we decide to create intervals for our values and treat each interval as a category.
+One can also make decisions by asking if a certain categorical variable takes a certain value in the data. 
 
-`play tennis diagram`
+![Tennis Tree](Figures/TennisTree.png)
 
-`binary as category diagram`
 
 ## Decision tree model
 
-Now that we have seen decision trees we will procede to show how we can learn this structure from labeled data. Let's say we want to learn a model to decide if we should go to play tennis or not, just like in `play tennis diagram`, and for this we have previous data of the decisions we made in the past and under which circumstances these were made.
+Now that we have seen decision trees we will procede to show how we can learn this structure from labeled data. Let's say we want to learn a model to decide if we should go to play tennis or not, just like in `reference play tennis diagram`, and for this we have previous data of the decisions we made in the past and under which circumstances these were made.
 
 |    | outlook | temperature | humidity | wind   | play tennis |
 |----|---------|-------------|----------|--------|-------------|
@@ -41,11 +39,11 @@ Now that we have seen decision trees we will procede to show how we can learn th
 | 13 | cloudy  | high        | normal   | weak   | yes         |
 | 14 | rainy   | medium      | high     | strong | no          |
 
-We will see different ways we can build a decision trees for this data.
+Based on this examples we would like to have an algorithm that builds a decision tree that we can use in the future to decide if we should go to play tennis or if we should stay home.
 
 ### ID3 Algorithm
 
-One algorithm that can be used to learn a decision tree from data is called ID3. This algorithm is simple to understand and implement, but one of its downfalls is that it only works for categorical data. We will later see the algorithm C4.5, which extends ID3 to be able to handle numerical data as well as missing data. For now, we will see how ID3 can be used to build a decision tree from the given table.
+One algorithm that can be used to learn a decision tree from data is called ID3. This algorithm is simple to understand and implement, but one of its downfalls is that it only works for categorical data. We will later see the algorithm C4.5, which extends ID3 to be able to handle numerical data as well as missing data. For now, we will see how ID3 can be used to build a decision tree from the given examples.
 
 ID3 can be briefly summarised in the following instructions
 
@@ -91,4 +89,4 @@ which is the case where the output of the machine carries the most uncertainty.
 
 This concept is important for us because it gives us a way to quantify how much uncertainty there is at each node of a decision tree, and how "good" is that node at assigning a label to the data. If our decision tree node is able to make a split where its childs have only data from one label each then we would be able to say that this node is leaving no uncertainty in the data, since we would be able to perfectly predict each point. This will be the goal of the ID3 algorithm, and to get to that point we will introduce the notion of **information gain**. 
 
-Information gain refers to how much the entropy is reduced ones we know one attribute of the data.
+Information gain refers to how much the entropy of a random variable is reduced once we observe another random variable. 
