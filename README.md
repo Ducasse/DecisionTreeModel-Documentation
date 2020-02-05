@@ -134,7 +134,9 @@ $$IG(play\ tennis, outlook) = H(play\ tennis) - H(play\ tennis | outlook)
 
 Now we get to the point of building our decision tree. We will do this in a *greedy* manner, meaning that at each step we will choose the attribute that gives us the best information gain, we will split on this attribute and then we will continue the algorithm with the remaining attributes that have not been chosen. 
 
-In our tennis example we start at first with our complete set of examples and all of our attributes. We then calculate the information gain given each attribute and we obtain that
+In our tennis example we start with our complete set of examples and all of our attributes. The first step of ID3 is to check for our stopping criteria. Since not all the examples have the same label and the set of attributes is not empty then we continue with the algorithm. 
+
+We now calculate the information gain given each attribute and we obtain that
 
 $$ IG(play\ tennis, outlook) = 0.246 $$
 $$ IG(play\ tennis, temperature) = 0.029 $$
@@ -155,3 +157,56 @@ We will start with the case where $outlook=cloudy$. In this case we will call th
 | 7  |   cloudy    | low         | normal   | strong | yes         |
 | 12 |   cloudy    | medium      | high     | strong | yes         |
 | 13 |   cloudy    | high        | normal   | weak   | yes         |
+
+We will follow the steps of ID3, so we have to start by checking the stopping criteria. We notice that here all the examples have the same label, so we return a leaf node with label $yes$. Now our tree looks like this
+
+![Tennis Tree](Figures/TennisTree-outlook-cloudy.png)
+
+Now that we got to a leaf node we go back and continue with the other childs of $outlook$. We will now look at the case where the $outlook$ is $sunny$. Here we are working with the following subset of examples
+
+|    | ~~outlook~~ | temperature | humidity | wind   | play tennis |
+|----|---------|-------------|----------|--------|-------------|
+| 1  | sunny   | high        | high     | weak   | no          |
+| 2  | sunny   | high        | high     | strong | no          |
+| 8  | sunny   | medium      | high     | weak   | no          |
+| 9  | sunny   | low         | normal   | weak   | yes         |
+| 11 | sunny   | medium      | normal   | strong | yes         |
+
+We check our stopping criteria but neither is satisfied. So now we calculate the information gains
+
+$$ IG(play\ tennis_{sunny}, temperature) = 0.570 $$
+$$ IG(play\ tennis_{sunny}, humidity) = 0.970 $$
+$$ IG(play\ tennis_{sunny}, wind) = 0.019 $$
+
+So here the best information gain is obtained when splitting by humidity. So we create the node for this case.
+
+![Tennis Tree](Figures/TennisTree-humidity.png)
+
+Just like before, we will now choose one of the childs and we will perform the ID3 algorithm again. We will choose the subset of examples where the $humidity$ is $normal$, and we will only use the attributes that have not yet been used. The subset of examples we will be working with will look like this
+
+|    | ~~outlook~~ | temperature | ~~humidity~~ | wind   | play tennis |
+|----|---------|-------------|----------|--------|-------------|
+| 9  | sunny   | low         | normal   | weak   | yes         |
+| 11 | sunny   | medium      | normal   | strong | yes         |
+
+Notice that we chose the subset of examples where $humidity=normal$ from our previous subset in which we had that $outlook=sunny$. We check our stopping conditions and we see that all examples have the same label, so we create a leaf node with label $yes$. Our current tree looks like this
+
+![Tennis Tree](Figures/TennisTree-humidity-normal.png)
+
+Notice that ID3 performs what is known as a Depth First Search, if we had not reached a stopping condition we would have kept exploring the $humidity=normal$ branch, and we would only check $humidity=high$ case after the branch was finished. In the same way, we will only be exploring the $outlook=rainy$ branch once the $outlook=sunny$ branch is completed. 
+
+Since we reached a leaf node we go back to the $humidity$ node and export its other child, where the $humidity$ is $high$
+
+|    | ~~outlook~~ | temperature | ~~humidity~~ | wind   | play tennis |
+|----|---------|-------------|----------|--------|-------------|
+| 1  | sunny   | high        | high     | weak   | no          |
+| 2  | sunny   | high        | high     | strong | no          |
+| 8  | sunny   | medium      | high     | weak   | no          |
+
+Again, all examples have the same label so we create a leaf node with label $no$.
+
+![Tennis Tree](Figures/TennisTree-humidity-high.png)
+
+Now that the branch where $outlook$ is $sunny$ is complete, we go to the remaining child of $outlook$. We implement the same procedure as before, and when we are done we will have with the following decision tree.
+
+![Tennis Tree](Figures/TennisTree-ID3.png)
