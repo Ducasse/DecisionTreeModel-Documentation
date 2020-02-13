@@ -71,11 +71,11 @@ $$H(X)=-\sum_{x\in vals(X)} p(x) \log_2\left(p(x)\right)$$
 
 Where $p(x)$ is the probability in that $X=x$. In our case, this is just the proportion occurrences of the value $x$ over the amount of examples. For decision trees, $X$ is the variable corresponding to the labels. This means that entropy gives us a way to quantify how "mixed" or "impure" our labels are in the dataset. 
 
-We also need a measure of the uncertainty in our prediction if we know that an attribute took a certain value. For this we introduce the concept of **conditional entropy**. The conditional entropy of a variable $X$ given that an attribute $A$ took the value of $a$ is denoted by $H(X|A=a)$. For our purposes, this means calculating the entropy of the subsets of examples where $A=a$. Now, we need the conditional entropy of a random variable $X$ given that we know the attribute $A$ (considering all the possible values it can take). This is denoted by
+We also need a measure of the uncertainty in our prediction given that we know a certain attribute. For this we introduce the concept of **conditional entropy**. First note that one can express entropy of a variable $X$ given that an attribute $A$ took the value of $a$ as $H(X|A=a)$. For our purposes, this means calculating the entropy of the subsets of examples where $A=a$. Now, the conditional entropy of a random variable $X$ given that we know the attribute $A$ is denoted by
 
 $$ H(X | A) = \sum_{a\in vals(A)} p(a) H(X|A=a) $$
 
-where $p(a)$ is the probability of the attribute $A$ taking the value of $a$. Just like before, this is number of occurrences of $a$ over the number of examples. This means that this measure averages the entropy in the different subsets of examples where $A=a$ weighting by the probability that $A$ actually takes the value $a$.
+where $p(a)$ is the probability of the attribute $A$ taking the value of $a$. Just like before, this is number of occurrences of $a$ over the number of examples. This means that the conditional entropy averages the entropy in the different subsets of examples where $A=a$ weighting by the probability that $A$ actually takes the value $a$.
 
 Finally, we need a notion of how much the uncertainty is being reduced by splitting the data at a certain attribute. For the we use the concept of **information gain**. This measure quantifies how good an attribute is at reducing the uncertainty in the data. To calculate the information gain of $X$ given that we know the attribute $A$ we compute the difference of the entropy before and after knowing the attribute $A$, which is denoted by
 
@@ -247,7 +247,7 @@ It is worth noting that if we had chosen another distribution our entropy could 
 $$H(X) =- \left( 0.2 \log_2(0.2) + 0.3 \log_2(0.3) + 0.5 \log_2(0.5) \right)= 1.485$$
 
 
-Another concept that is worth exploring is the **conditional entropy**, meaning the entropy of a random variable given that we know another random variable, this will be expressed as $H(Y|X)$. 
+ID3 also uses the **conditional entropy**. It means the entropy of a random variable given that we know another random variable, this is expressed as $H(Y|X)$. 
 
 To define the conditional entropy we first have to look at the entropy of the random variable $Y|X=x$, which is the random variable $Y$ given that we now that the random variable $X$ took the value of $x$. If both $X$ and $Y$ are discrete this can be written as
 
