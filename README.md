@@ -1,39 +1,43 @@
 # Decision Tree Learning Models
 
-Everyday we try to make decisions about actions we will take. These usually can be structures in a series of conditions, for example "I can go to the party only if I don't have homework for tomorrow. If I don't have homework I will only go if my friends are also going". These conditions seem very intuitive and are very easy to follow, and it can be made even more clear if we represent it as a diagram in which at each node we write a decision that has to be made. 
+Everyday we try to make decisions about actions we take. These usually are structured in a series of conditions, for example "I can go to the party only if I don't have homework for tomorrow. If I don't have homework I will only go if my friends are also going". These conditions seem very intuitive and are very easy to follow, and it can be made even more clear if we represent it as a diagram in which at each node we write a decision that has to be made. 
 
 ![Party Tree](Figures/PartyTree.pdf) 
 
-In this diagram there is a node with a question at the top, and depending on the answer we follow we will get to a different node. If we then continue answering the questions we will end up at a node with a final decision that was made (stay home or go to the party). This is an example of what is called a **decision tree**. A decision trees consist of a model structure in which we start at a **root node** which has a question and some child nodes. Depending on the answer to the question you will move the corresponding child node, which can also contain a question or give you a final decision. All paths will eventually lead to a node with a final decision, these are called **leaf nodes**. The goal of this chapter will be to see different techniques to learn decision trees from labeled data.
+In this diagram there is a node with a question at the top, and depending on the answer we follow we will get to a different node. If we then continue answering the questions we will end up at a node with a final decision that was made (stay home or go to the party). This is an example of what is called a **decision tree**. A decision tree consists of a model structure in which we start at a **root node** which has a question and some child nodes. Depending on the answer to the question you will move the corresponding child node, which can also contain a question or give you a final decision. All paths will eventually lead to a node with a final decision, these are called **leaf nodes**. The goal of this chapter will be to see different techniques to learn decision trees from labeled data.
 
 ## Decision Trees
 
-Just like we showed before, decision trees are a way to represent knowledge on a subject and to arrive to conclusions based on the information that is given. One arrives at this conclusion by asking a question at each node, depending on the answer to move to one of its child, and then continue until you have reached a final decision. An example of a question that can be made at a node is to ask if a numerical  variable is above or below certain value. This type of question will have two childs, one for when the condition is satisfied and another for when it is not.
+Just like we showed before, decision trees are a way to represent knowledge on a subject and to arrive to conclusions based on the information that is given. One arrives at this conclusion by asking a question at each node, depending on the answer to move to one of its child, and then continue until you have reached a final decision. An example of a question that can be made at a node is to ask if a numerical  variable is above or below certain value. This type of question will have two children, one for when the condition is satisfied and another for when it is not.
 
 
 ![Binary Tree](Figures/BinaryTree.pdf)
 
-One can also ask if a categorical variable takes a certain value. In this  case the node will as many of childs as categories the variable can take. 
+One can also ask if a categorical variable takes a certain value. In this  case the node will have as many children as categories the variable can take. 
 
 ![Tennis Tree](Figures/TennisTree.pdf)
 
 
 ## Decision tree model
 
-Now that we have seen decision trees we will proceed to show how we can learn this structure from labeled data. The goal is that, given a dataset of examples and a target variable, we would like to build a decision tree  that we can use to classify future examples.
+Now that we have seen decision trees we will proceed to show how we can learn this structure from labeled data. The goal is that, given a dataset of examples and a target variable, we build a decision tree  that we can use to classify future examples.
 
 ### ID3 Algorithm
 
-One algorithm that can be used to learn a decision tree from data is called ID3 (Iterative Dichotomiser 3). This algorithm is simple to understand and implement, but one of its downfalls is that it only works for categorical data. We will later see the algorithm C4.5, which extends ID3 to be able to handle numerical data as well as missing data. For now, we will see how ID3 can be used to build a decision tree from the given examples.
+One algorithm that can be used to learn a decision tree from data is called ID3 (Iterative Dichotomiser 3). This algorithm is simple to understand and implement, but one of its downfalls is that it only works for categorical data. We will later see the algorithm C4.5, which extends ID3 to be able to handle numerical data as well as missing data. For now, we show how ID3 is used to build a decision tree from the given examples.
 
-ID3 can be briefly summarised in the following instructions:
+ID3 is briefly summarised by the following instructions: 
 
 * If all examples have the same label or if there are no more attributes that can be used, return a leaf node with a decision.
-* If not, find the best attribute to split on (the one that gives the best information gain)
+* If not, find the best attribute to split on.
 * For each possible value of the best attribute, create a child node and call the algorithm recursively on each node.
 
-For a more detailed explanation see `reference pseudo-code`. It is important to note that when we make the recursive call to the algorithm we give it only the examples that satisfy the condition given by the corresponding child. We also exclude the attribute that was just used, meaning that in each branch an attribute can only be used once. This algorithm is designed to continue until all the examples are perfectly classified. If some examples have the same values for its attributes but different labels then the algorithm will use up all possible attributes trying to separate them and, once it runs out of attributes, it will create a leaf node with the most common label. 
 
+
+For a more detailed explanation see `reference pseudo-code`. 
+Note that, at each recursive call, we apply the algorithm only on a subset of the examples and we exclude the attribute that was just used. 
+This algorithm is designed to continue until all the examples are perfectly classified. 
+<!--If some examples have the same values for its attributes but different labels then the algorithm uses up all possible attributes trying to separate them and, once it runs out of attributes, it creates a leaf node with the most common label.--> 
 
 ```
 ID3(Training set S, Attributes)
@@ -54,19 +58,28 @@ ID3(Training set S, Attributes)
 
 #### Stopping criteria
 
-Since this algorithm follows a recursive strategy we need some conditions to tell the algorithm when to stop and return a value. The first condition says that if the dataset $S$ is perfectly label, then you should stop the recursion and return a leaf node with the label. The second condition says that if the set of attributes is empty, then you must return a leaf node with the most common label. This step is important because once we choose an attribute to make a split that attribute will no longer be considered in the rest of the splits coming below it in the hierarchy. This means that it is possible that at one step we will run out of attributes to use. In this case we will say that by default you should return a leaf node with the most common label in the examples.
+Since this algorithm follows a recursive strategy we need some conditions to tell the algorithm when to stop and return a value. The first condition says that if the dataset $S$ is perfectly label, then you should stop the recursion and return a leaf node with the label. The second condition says that if the set of attributes is empty, then you must return a leaf node with the most common label. We do this because after each split we exclude the attribute that was just used. This means that at some point we can run out of attributes to continue splitting even if not all the examples have not yet been perfectly classified.
+
+
 
 #### Best feature to make the split
 
-To compare how good is each attribute to split the data we have to define a metric that tells us what a "good" separation is. In this case, our measure of how mixed or "impure" the dataset labels are will be the **entropy** of the data. An explanation of what is entropy and how it is calculated can be found in the Appendix, but one can just think of it as a measure of uncertainty that is carried by a random variable. In the case for decision trees it will represent how "mixed" or "impure" are the labels at a given node.
+To compare how good is each attribute to split the data we have to define a metric that tells us what a "good" separation is. In this case, our measure of how mixed or "impure" the dataset labels are will be the **entropy** of the data. An explanation of what is entropy and how it is calculated can be found in the Appendix, but one can just think of it as a measure of much uncertainty there is when predicting a label. 
+The entropy of a discrete random variable $X$ will be calculated as
 
-This concept is important for us because it gives us a way to quantify how "good" is that node at assigning a label to the data. If our decision tree node is able to make a split where its childs have examples from only one label each, then we would be able to perfectly predict the label each example. Here we would say that this node is leaving no uncertainty in the data. This will be the goal of the ID3 algorithm, and to get to that point we will introduce the notion of **information gain**. 
+$$H(X)=-\sum_{x\in vals(X)} p(x) \log_2\left(p(x)\right)$$
 
-Information gain refers to how much the entropy of a random variable is reduced once we observe another random variable. In our case, we are interested on how the entropy of the target variable is reduced given that we know the value of one of the attributes. The information gain of a random variable $X$ given that we know an attribute $A$ can be expressed by
+Where $p(x)$ is the probability in that $X=x$. In our case, this is just the proportion occurrences of the value $x$ over the amount of examples. For decision trees, $X$ is the variable corresponding to the labels. This means that entropy gives us a way to quantify how "mixed" or "impure" our labels are in the dataset. 
 
-$$IG(X, A) = H(X) - H(X | A) =  H(X) - \sum_{a\in vals(A)} p(a) H(X|A=a)$$
+We also need a measure of the uncertainty in our prediction if we know that an attribute took a certain value. For this we introduce the concept of **conditional entropy**. The conditional entropy of a variable $X$ given that an attribute $A$ took the value of $a$ is denoted by $H(X|A=a)$. For our purposes, this means calculating the entropy of the subsets of examples where $A=a$. Now, we need the conditional entropy of a random variable $X$ given that we know the attribute $A$ (considering all the possible values it can take). This is denoted by
 
-The term $H(X | A)$ is the conditional entropy of the random variable $X$ given that we know the random variable $A$. A more detailed explanation can be found in the appendix, but for now it is enough to know that we compute the conditional entropy by adding entropy of $X$ given that we know that the attribute $A$ takes the value of $a$, weighted with the probability that the attribute $A$ takes the value of $a$, for all possible values of $A$.
+$$ H(X | A) = \sum_{a\in vals(A)} p(a) H(X|A=a) $$
+
+where $p(a)$ is the probability of the attribute $A$ taking the value of $a$. Just like before, this is number of occurrences of $a$ over the number of examples. This means that this measure averages the entropy in the different subsets of examples where $A=a$ weighting by the probability that $A$ actually takes the value $a$.
+
+Finally, we need a notion of how much the uncertainty is being reduced by splitting the data at a certain attribute. For the we use the concept of **information gain**. This measure quantifies how good an attribute is at reducing the uncertainty in the data. To calculate the information gain of $X$ given that we know the attribute $A$ we compute the difference of the entropy before and after knowing the attribute $A$, which is denoted by
+
+$$IG(X, A) = H(X) - H(X | A)$$
 
 
 #### Splitting and recursion
@@ -103,7 +116,7 @@ $$H(play\ tennis)
 = - \left(p_{yes}\log_2\left(p_{yes}\right) + p_{no}\log_2\left(p_{no}\right)\right)$$
 $$= - \left(\frac{9}{14}\log_2\left(\frac{9}{14}\right) + \frac{5}{14}\log_2\left(\frac{5}{14}\right)\right) = 0.940$$
 
-Now we would like how much information we can gain given that we know the $outlook$. We will start by calculating the entropy of the $play\ tennis$ given that we know that the $outlook$ was $sunny$. This means that we are only interested in the following subset of example
+Now we would like how much information we can gain given that we know the $outlook$ attribute. We will start by calculating the entropy of the $play\ tennis$ given that we know that the $outlook$ was $sunny$. This means that we are only interested in the following subset of example
 
 |    | outlook | temperature | humidity | wind   | play tennis |
 |----|---------|-------------|----------|--------|-------------|
@@ -140,13 +153,13 @@ $$ IG(play\ tennis, humidity) = 0.151 $$
 $$ IG(play\ tennis, wind) = 0.048 $$
 
 
-This means that best information gain is obtained when we observe the $outlook$. Since we know that the outlook can take the values of $sunny$, $cloudy$ and $rainy$ the first part of the decision tree we are building will only have these three childs
+This means that best information gain is obtained when we observe the $outlook$. Since we know that the outlook can take the values of $sunny$, $cloudy$ and $rainy$ the first part of the decision tree we are building will only have these three children
 
 ![Tennis Tree](Figures/TennisTree-outlook.pdf)
 
-Now we have to repeat the process at each child, and in each one we will use the "splitted" dataset, meaning that we will consider the subset of examples given that we know the value of the $outlook$. 
+Now we have to repeat the process with each child, and in each one we will use the "splitted" dataset, meaning that we will consider the subset of examples given that we know the value of the $outlook$. 
 
-We will start with the case where $outlook=cloudy$. In this case we will call the algorithm again, but only on the subset of examples were the $outlook$ is $cloudy$, and with the attributes that have not yet been used. So the dataset we are working with looks like the one in Table `reference following table`
+We start with the case where $outlook=cloudy$. In this case we call the algorithm again, but only on the subset of examples were the $outlook$ is $cloudy$, and with the attributes that have not yet been used. So the dataset we are working with looks like the one in Table `reference following table`
 
 |    | ~~outlook~~ | temperature | humidity | wind   | play tennis |
 |----|-------------|-------------|----------|--------|-------------|
@@ -155,11 +168,11 @@ We will start with the case where $outlook=cloudy$. In this case we will call th
 | 12 |   cloudy    | medium      | high     | strong | yes         |
 | 13 |   cloudy    | high        | normal   | weak   | yes         |
 
-We will follow the steps of ID3, so we have to start by checking the stopping criteria. We notice that here all the examples have the same label, so we return a leaf node with label $yes$. So far, our tree will look like the one in `figure of tree`
+We follow the steps of ID3, so we have to start by checking the stopping criteria. We notice that here all the examples have the same label, so we return a leaf node with label $yes$. So far, our tree will look like the one in `figure of tree`
 
 ![Tennis Tree](Figures/TennisTree-outlook-cloudy.pdf)
 
-Now that we got to a leaf node we go back and continue with the other childs of $outlook$. We will now look at the case where the $outlook$ is $sunny$, the corresponding subset of examples can be seen in the Table `reference following table`. 
+Now that we got to a leaf node we go back and continue with the other children of $outlook$. We will now look at the case where the $outlook$ is $sunny$, the corresponding subset of examples can be seen in the Table `reference following table`. 
 
 |    | ~~outlook~~ | temperature | humidity | wind   | play tennis |
 |----|---------|-------------|----------|--------|-------------|
@@ -179,7 +192,7 @@ So here the best information gain is obtained when splitting by humidity.
 
 ![Tennis Tree](Figures/TennisTree-humidity.pdf)
 
-Just like before, we will now choose one of the childs and we will perform the ID3 algorithm again. We will choose the subset of examples where the $humidity$ is $normal$, and we will only use the attributes that have not yet been used. The subset of examples we will be working with will look like this
+Just like before, we will now choose one of the children and we apply the ID3 algorithm again. We will choose the subset of examples where the $humidity$ is $normal$, and we only use the attributes that have not yet been used. The subset of examples we will be working with will look like this
 
 |    | ~~outlook~~ | temperature | ~~humidity~~ | wind   | play tennis |
 |----|---------|-------------|----------|--------|-------------|
@@ -202,7 +215,7 @@ Again, all examples have the same label so we create a leaf node with label $no$
 
 ![Tennis Tree](Figures/TennisTree-humidity-high.pdf)
 
-Now that the branch where $outlook$ is $sunny$ is complete, we go to the remaining child of $outlook$. We implement the same procedure as before, there we will see that the best information gain is obtained when splitting by $wind$, and after exploring both childs we will have completed the tree.
+Now that the branch where $outlook$ is $sunny$ is complete, we go to the remaining child of $outlook$. We implement the same procedure as before, there we will see that the best information gain is obtained when splitting by $wind$, and after exploring both children we will have completed the tree.
 
 ![Tennis Tree](Figures/TennisTree-ID3.pdf)
 
@@ -255,3 +268,5 @@ $$H(Y | X) = H(Y)$$
 (fix later)
 
 [Elements of Information Theory](http://staff.ustc.edu.cn/~cgong821/Wiley.Interscience.Elements.of.Information.Theory.Jul.2006.eBook-DDU.pdf)
+
+[Data Mining with Decision Trees_ Theory and Applications (2nd ed.)](https://doc.lagout.org/Others/Data%20Mining/Data%20Mining%20with%20Decision%20Trees_%20Theory%20and%20Applications%20%282nd%20ed.%29%20%5BRokach%20%26%20Maimon%202014-10-23%5D.pdf)
